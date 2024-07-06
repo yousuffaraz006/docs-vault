@@ -1,0 +1,182 @@
+{% extends 'locker/base.html' %}
+
+{% block head %}
+<style>
+  .img-container {
+    height: 200px;
+    /* Set your desired fixed height */
+    overflow: hidden;
+    /* Hide any overflow */
+  }
+
+  .img-container img {
+    height: 100%;
+    /* Ensure the image takes up the full height of the container */
+    width: 100%;
+    /* Ensure the image takes up the full width of the container */
+    object-fit: cover;
+    /* Maintain the aspect ratio and cover the container */
+  }
+
+  .image-container {
+    height: 78vh;
+    /* Set your desired fixed height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* Hide any overflow */
+  }
+
+  .image-container img {
+    max-height: 100%;
+    object-fit: cover;
+    /* Ensure the image covers the container without distorting */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<div class="container">
+
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#upld" type="button" role="tab"
+        aria-controls="home" aria-selected="true">Uploaded Docs</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#shrd" type="button" role="tab"
+        aria-controls="profile" aria-selected="false">Shared Docs</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="upld" role="tabpanel" aria-labelledby="home-tab">
+      <div class="row">
+        <ul class="list-unstyled d-flex flex-wrap">
+          {% for upload in uploads %}
+          <li class="col-12 col-sm-6 col-md-4 col-lg-3 my-3 px-2">
+            <div class="card">
+              <div class="img-container">
+                <a href="" data-bs-toggle="modal" data-bs-target="#uploadedmodal{{ forloop.counter }}">
+                  <img src="{{ upload.docimg.url }}" class="card-img-top" alt="documentimage">
+                </a>
+              </div>
+              <!--Image Viewer Modal Start-->
+              {% for upload in uploads %}
+              <div class="modal fade" id="uploadedmodal{{ forloop.counter }}" tabindex="-1"
+                aria-labelledby="exampleModalLabel{{ forloop.counter }}" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}">{{ upload.title }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="image-container">
+                        <img src="{{ upload.docimg.url }}" alt="Your Image" class="img-fluid">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              <!--Image Viewer Modal End-->
+              <div class="card-body">
+                <h5 class="card-title">{{ upload.title }}</h5>
+                <p class="card-text">
+                  <a href="{% url 'edituploadpg' upload.id %}" class="btn btn-primary form-control">Update</a>
+                </p>
+                <p class="text-end m-0">{{ upload.created|date:'j M Y' }}</p>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+          <li class="col-12 col-sm-6 col-md-4 col-lg-3 my-3 px-2">
+            <div class="card">
+              <a href="{% url 'uploadpage' %}">
+                <div class="img-container">
+                  <img src="{% static 'locker/blank.png' %}" class="card-img-top" alt="documentimage">
+                </div>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="shrd" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="row">
+        <ul class="list-unstyled d-flex flex-wrap">
+          {% for share in shares %}
+          {% if share.sender_user == request.user or share.reciever_user == request.user %}
+          <li class="col-12 col-sm-6 col-md-4 col-lg-3 my-3 px-2">
+            <div class="card">
+              <div class="img-container">
+                <a href="" data-bs-toggle="modal" data-bs-target="#sharedmodal{{ forloop.counter }}">
+                  <img src="{{ share.shrdimg.url }}" class="card-img-top" alt="documentimage">
+                </a>
+              </div>
+              <!-- Modal -->
+              {% for share in shares %}
+              <div class="modal fade" id="sharedmodal{{ forloop.counter }}" tabindex="-1"
+                aria-labelledby="exampleModalLabel{{ forloop.counter }}" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel{{ forloop.counter }}">{{ share.shrdtitle }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="image-container">
+                        <img src="{{ share.shrdimg.url }}" alt="Your Image" class="img-fluid">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+              <div class="card-body">
+                <h5 class="card-title">{{ share.shrdtitle }}</h5>
+                <p>Shared {% if share.sender_user == request.user %}to : {{ share.reciever_user.first_name }}{% else %}by : {{ share.sender_user.first_name }}{% endif %}</p>
+                {% if share.sender_user == request.user %}
+                <p class="card-text">
+                  <a href="{% url 'editsharepg' share.id %}" class="btn btn-primary form-control">Update</a>
+                </p>
+                {% else %}
+                  {% if share.dwnldprms %}
+                  <p class="card-text">
+                    <a href="{{ share.shrdimg.url }}" class="form-control btn btn-primary mb-2" download>Download</a>
+                  </p>
+                  {% endif %}
+                {% endif %}
+                <p class="text-end m-0">{{ share.shrdtime|date:'j M Y' }}</p>
+              </div>
+            </div>
+          </li>
+          {% endif %}
+          {% endfor %}
+          <li class="col-12 col-sm-6 col-md-4 col-lg-3 my-3 px-2">
+            <div class="card">
+              <a href="{% url 'sharepage' %}">
+                <div class="img-container">
+                  <img src="{% static 'locker/blank.png' %}" class="card-img-top" alt="documentimage">
+                </div>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

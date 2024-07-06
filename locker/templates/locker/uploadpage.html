@@ -1,0 +1,52 @@
+{% extends 'locker/base.html' %}
+
+{% block content %}
+
+<br>
+<br>
+<div class="container">
+    <div class="row justify-content-center mb-3">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <h1>Upload Documents</h1>
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                <div class="form-group">
+                    <label for="id_title" class="mb-1"><b>Title :</b></label>
+                    <input type="text" id="id_title" class="form-control mb-3" name="title" required>
+                    <label for="id_image" class="mb-1"><b>Upload Image :</b></label>
+                    <input type="file" name="docimg" id="id_image" class="form-control" required><small>Please upload only Images.</small>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="rounded-1 alert alert-info my-2">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    <button type="submit" class="form-control btn btn-success mt-2">Upload</button>
+                    <a href="{% url 'homepage' %}" class="form-control btn btn-success mt-2">Back</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- <div class="row justify-content-center">
+    <div class="col-6">
+        <div class="form-group">
+            <label for="id_title" class="mb-2"><b>Title :</b></label>
+            <input type="text" id="id_title" class="form-control" name="title">
+            <label for="id_description" class="mt-3 mb-2"><b>Description :</b></label>
+            <br>
+            <textarea name="description" id="id_description" class="form-control mb-3"></textarea>
+            <label for="id_image" class="mb-2"><b>Upload Image :</b></label>
+            <input type="file" name="docimg" id="id_image" class="form-control mb-3">
+            <div class="bg-white rounded-1 mb-2">{{ error }}</div>
+            
+            <button type="submit" class="form-control btn btn-success">Upload</button>
+        </div>
+    </div>
+</div> -->
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'locker/base.html' %}
+
+{% block content %}
+ 
+<br>
+<br>
+<div class="container">
+    <div class="row justify-content-center mb-3">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <h1>Send Reset Password Mail</h1>
+        </div>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                <div class="form-group">
+                    <label for="id_email" class="mb-2"><b>Email :</b></label>
+                    <input type="email" id="id_email" class="form-control mb-3" name="username" required>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="rounded-1 alert alert-info mt-3">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    <button type="submit" class="form-control btn btn-success mb-3">Send Mail</button>
+                    <a href="{% url 'loginpage' %}" class="form-control btn btn-success">Go Back</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
