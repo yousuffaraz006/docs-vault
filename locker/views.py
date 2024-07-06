@@ -84,22 +84,22 @@ def loginuser(request):
             return redirect('loginpage')
         else:
             profile_obj = Profile.objects.filter(user=user_obj).first()
-            if not profile_obj.is_verified:
-                auth_token = str(uuid.uuid4())
-                profile_obj.auth_token = auth_token
-                profile_obj.save()
-                email_obj = User.objects.get(username=username).username
-                send_mail_after_registration(email_obj, auth_token)
-                messages.info(request, 'Your account is not verified. Please check your mailbox for "Account Verification" mail and click on the link to verify your account. We have sent a new "Account Verification" mail.')
+            user = authenticate(username=username, password=password)
+            if user is None:
+                messages.info(request, 'Please enter the credentials correctly.')
                 return redirect('loginpage')
             else:
-                user = authenticate(username=username, password=password)
-                if user is None:
-                    messages.info(request, 'Please enter the credentials correctly.')
+                if not profile_obj.is_verified:
+                    auth_token = str(uuid.uuid4())
+                    profile_obj.auth_token = auth_token
+                    profile_obj.save()
+                    email_obj = User.objects.get(username=username).username
+                    send_mail_after_registration(email_obj, auth_token)
+                    messages.info(request, 'Your account is not verified. Please check your mailbox for "Account Verification" mail and click on the link to verify your account. We have sent a new "Account Verification" mail.')
                     return redirect('loginpage')
                 else:
                     login(request, user)
-                    return redirect('homepage')
+                    return redirect('homepage')                
     else:
         return render(request, 'locker/loginpage.html')
     
