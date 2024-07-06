@@ -43,7 +43,7 @@ def send_mail_after_registration(email, token):
     if DEBUG:
         link = '127.0.0.1:8000'
     else:
-        link = 'https://yousuffarazofficial.pythonanywhere.com'
+        link = 'https://yousufaraz.pythonanywhere.com'
     subject = 'Account Verification'
     message = f'Hi {user_fname}, please click on the link to verify your account on Desi Digilocker. {link}/verify/{token}'
     email_from = settings.EMAIL_HOST_USER
@@ -134,7 +134,7 @@ def send_mail_for_reset(email, token):
     if DEBUG:
         link = '127.0.0.1:8000'
     else:
-        link = 'https://yousuffarazofficial.pythonanywhere.com'
+        link = 'https://yousufaraz.pythonanywhere.com'
     subject = 'Password Reset'
     message = f'Hi {user_fname}, please click on the link to reset your account password on Desi Digilocker. {link}/resetpswd/{token}'
     email_from = settings.EMAIL_HOST_USER
