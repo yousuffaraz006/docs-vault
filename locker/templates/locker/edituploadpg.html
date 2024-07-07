@@ -17,9 +17,6 @@
                 <div class="form-group">
                     <label for="id_title" class="mb-1"><b>Title :</b></label>
                     <input type="text" id="id_title" class="form-control mb-3" name="title" value="{{ upload.title }}">
-                    <label for="id_image" class="mb-1"><b>Image :</b></label>
-                    <input type="file" name="docimg" id="id_image" class="form-control"><small>Please upload only
-                        Images.</small>
                     {% if messages %}
                     {% for message in messages %}
                     <div class="rounded-1 alert alert-info my-2">{{ message }}</div>

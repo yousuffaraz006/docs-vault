@@ -9,4 +9,4 @@ class UploadForm(ModelForm):
 class ShareForm(ModelForm):
     class Meta:
         model = Share
-        fields = ['reciever_user', 'shrdtitle', 'shrdimg', 'dwnldprms']
+        fields = ['shrdtitle','dwnldprms'] 

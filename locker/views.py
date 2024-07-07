@@ -66,7 +66,7 @@ def verify(request, auth_token):
         else:
             return redirect('errorpage')
     except Exception as e:
-        print(e)
+        messages.info(request, e)
         return render(request, 'locker/signuppage.html')
 
 @unauthenticated_user
@@ -175,7 +175,7 @@ def logoutuser(request):
     
 @login_required(login_url="/login")
 def home(request):
-    shares = Share.objects.all().order_by('-shrdtime')
+    shares = Share.objects.filter(reciever_user=request.user).order_by('-shrdtime')
     profile = Profile.objects.get(user=request.user)
     uploads = Upload.objects.filter(user=request.user).order_by('-created')
     return render(request, 'locker/homepage.html', {'uploads':uploads, 'profile':profile, 'shares':shares})
@@ -196,20 +196,53 @@ def upload(request):
         return render(request, 'locker/uploadpage.html', {'form':UploadForm})
     
 @login_required(login_url="/login")
-def share(request):
-    alluser = User.objects.all().exclude(username=request.user)
+def share(request, upload_id):
+    uploads = get_object_or_404(Upload, id=upload_id)
+    upltitle = uploads.title
+    print(upltitle)
+    uplimg = uploads.docimg
+    print(uplimg.url)
+    shares = Share.objects.filter(sender_user=request.user, shrdimg=uploads.docimg)
+    print('1')
     if request.method == 'POST':
-        try:
+        print('2')
+        uplrcv = request.POST.get('uplrcv')
+        user_obj = User.objects.filter(username=uplrcv).first()
+        if user_obj:
+            print(uplrcv)
+            rcvr_user = User.objects.get(username=uplrcv)
+            dwnldprms = request.POST.get('dwnldprms') == 'on'
+            print(rcvr_user)
             form = ShareForm(request.POST, request.FILES)
-            newshare = form.save(commit=False)
-            newshare.sender_user = request.user
-            newshare.save()
-            return redirect('homepage')
-        except ValueError:
-            messages.info(request, 'Error : Bad data passed in. Try again.')
-            return redirect('sharepage')
+            print('3')
+            if form.is_valid:
+                print('4')
+                
+                print('5')
+                share_exist = Share.objects.filter(reciever_user=rcvr_user, shrdimg=uplimg).first()
+                if rcvr_user == request.user:
+                    messages.info(request, 'Error : Bad info')
+                    return redirect('sharepage', upload_id=upload_id)
+                else:
+                    if share_exist:
+                        messages.info(request, 'You have already shared this document with ' + uplrcv)
+                        return redirect('sharepage', upload_id=upload_id)
+                    else:
+                        newshare = Share.objects.create(
+                            sender_user=request.user, 
+                            shrdtitle=upltitle, 
+                            shrdimg=uplimg, 
+                            reciever_user=rcvr_user, 
+                            dwnldprms=dwnldprms)
+                        newshare.save()
+                        return redirect('homepage')
+            else:
+                print(form.errors, 'form.errors')
+        else:
+            messages.info(request, 'User not found.')
+            return redirect('sharepage', upload_id=upload_id)
     else:
-        return render(request, 'locker/sharepage.html', {'form':UploadForm, 'alluser':alluser})
+        return render(request, 'locker/sharepage.html', {'form':UploadForm, 'uploads':uploads, 'shares':shares})
 
 @login_required(login_url="/login")
 def editupload(request, upload_pk):
@@ -229,18 +262,24 @@ def editupload(request, upload_pk):
 @login_required(login_url="/login")
 def editshare(request, share_pk):
     share = get_object_or_404(Share, pk=share_pk, sender_user=request.user)
-    alluser = User.objects.all().exclude(username=request.user).exclude(username=share.reciever_user.username)
+    uploads = Upload.objects.filter(user=request.user, docimg=share.shrdimg)
+    print('1')
     if request.method == 'POST':
         try:
+            print('3')
             form = ShareForm(request.POST, request.FILES, instance=share)
+            print('4')
+            form.shrdtitle = share.shrdtitle
+            print('5')
             form.save()
+            print('saved')
             return redirect('homepage')
         except ValueError:
             messages.info(request, 'Error : Bad info')
             return redirect('editsharepg', share_pk=share_pk)
     else:
         form = ShareForm(instance=share)
-        return render(request, 'locker/editsharepg.html', {'share':share, 'form':form, 'alluser':alluser}) 
+        return render(request, 'locker/editsharepg.html', {'share':share, 'form':form, 'uploads':uploads}) 
         
 @login_required(login_url="/login")
 def deleteupload(request, upload_pk):

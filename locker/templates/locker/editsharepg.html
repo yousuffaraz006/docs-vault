@@ -17,26 +17,14 @@
                 <div class="form-group">
                     <label for="id_shrtitle" class="mb-1"><b>Title :</b></label>
                     <input type="text" id="id_shrtitle" class="form-control mb-3" name="shrdtitle" value="{{ share.shrdtitle }}">
-                    <label for="id_image" class="mb-1"><b>Image :</b></label>
-                    <input type="file" name="shrdimg" id="id_image" class="form-control"><small>Please share only
-                        Images.</small>
-                    <br>
                     <label for="id_dwnldprms" class="form-check-label mb-1 mt-3"><b>Download Permission : </b></label>
-                    <input type="checkbox" name="dwnldprms" id="id_dwnldprms" class="form-check-input mt-3 mx-3"{% if share.dwnldprms %} checked {% endif %}>
-                    <br>
-                    <label for="id_shrreciever" class="mb-1 mt-3"><b>Recipient :</b></label>
-                    <select name="reciever_user" id="id_shrreciever" class="form-control" required>
-                        <option value="{{ share.reciever_user.id }}" class="form-control" selected>{{ share.reciever_user.first_name }} {{ share.reciever_user.last_name }}</option>
-                        {% for eachuser in alluser %} 
-                        <option value="{{ eachuser.id }}" class="form-control">{{ eachuser.first_name }} {{ eachuser.last_name }}</option>
-                        {% endfor %}
-                    </select>
+                    <input type="checkbox" name="dwnldprms" id="id_dwnldprms" class="form-check-input mt-3 mx-3" {% if share.dwnldprms %} checked {% endif %}>
                     {% if messages %}
                     {% for message in messages %}
                     <div class="rounded-1 alert alert-info my-2">{{ message }}</div>
                     {% endfor %}
                     {% endif %}
-                    <button type="submit" class="form-control btn btn-success my-2">Share</button>
+                    <button type="submit" class="form-control btn btn-success my-2">Update</button>
                     <a href="{{ share.shrdimg.url }}" class="form-control btn btn-info mb-2" download>Download</a>
                 </div>
             </div>
@@ -44,7 +32,8 @@
     </form>
     <div class="row justify-content-center">
         <div class="col-12 col-sm-10 col-md-8 col-lg-6 mb-2">
-            <button class="form-control btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteShareModal">Delete</button>
+            <button class="form-control btn btn-danger" data-bs-toggle="modal"
+                data-bs-target="#DeleteShareModal">Delete</button>
             <div class="modal fade" id="DeleteShareModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
@@ -54,7 +43,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Are you sure you want to delete {{ upload.title }}?
+                            Are you sure you want to delete the Document '{{ share.shrdtitle }}' shared with {{ share.reciever_user.first_name }}?
                         </div>
                         <div class="modal-footer">
                             <a type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</a>
@@ -70,9 +59,11 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-12 col-sm-10 col-md-8 col-lg-6 mb-3">
-            <a href="{% url 'homepage' %}" class="form-control btn btn-secondary">
+            {% for upload in uploads %}
+            <a href="{% url 'sharepage' upload.id %}" class="form-control btn btn-secondary">
                 Go Back
             </a>
+            {% endfor %}
         </div>
     </div>
 </div>

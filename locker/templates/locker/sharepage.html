@@ -15,21 +15,11 @@
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6">
                 <div class="form-group">
-                    <label for="id_shrtitle" class="mb-1"><b>Title :</b></label>
-                    <input type="text" id="id_shrtitle" class="form-control mb-3" name="shrdtitle" required>
-                    <label for="id_shrimage" class="mb-1"><b>Image :</b></label>
-                    <input type="file" name="shrdimg" id="id_shrimage" class="form-control" required><small>Please share only Images.</small>
-                    <br>
                     <label for="id_dwnldprms" class="form-check-label mb-1 mt-3"><b>Download Permission : </b></label>
                     <input type="checkbox" name="dwnldprms" id="id_dwnldprms" class="form-check-input mt-3 mx-3">
                     <br>
                     <label for="id_shrreciever" class="mb-1 mt-3"><b>Recipient :</b></label>
-                    <select name="reciever_user" id="id_shrreciever" class="form-control" required>
-                        <option value="" class="form-control" selected disabled></option>
-                        {% for eachuser in alluser %} 
-                        <option value="{{ eachuser.id }}" class="form-control">{{ eachuser.first_name }} {{ eachuser.last_name }}</option>
-                        {% endfor %}
-                    </select>
+                    <input type="text" name="uplrcv" id="id_shrreciever" class="form-control mb-3">
                     {% if messages %}
                     {% for message in messages %}
                     <div class="rounded-1 alert alert-info my-2">{{ message }}</div>
@@ -37,6 +27,29 @@
                     {% endif %}
                     <button type="submit" class="form-control btn btn-success mt-2">Share</button>
                     <a href="{% url 'homepage' %}" class="form-control btn btn-success mt-2">Back</a>
+                    <div class="row justify-content-center">
+                        <div class="col-12 my-2">
+                            <a class="form-control btn btn-info">Shared Users</a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-6 my-2">
+                            {% for share in shares %}
+                            <a class="form-control btn btn-info">{{ share.reciever_user.username }}</a>
+                            <br>
+                            <br>
+                            {% endfor %}
+                        </div>
+                        <div class="col-6 my-2">
+                            {% for share in shares %}
+                            <a href="{% url 'editsharepg' share.id %}" class="form-control btn btn-secondary">
+                                Edit Share
+                            </a>
+                            <br>
+                            <br>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
